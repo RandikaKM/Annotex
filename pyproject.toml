@@ -4,9 +4,9 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "annotex"
-description = "AI-Powered Annotation Tool for Computer Vision Datasets"
+description = "Annotation Tool for Computer Vision Datasets"
 authors = [
-    {name = "Your Name", email = "your.email@example.com"}
+    {name = "Randika K. Makumbura", email = "randikamk.96@gmail.com"}
 ]
 license = {text = "MIT"}
 readme = "README.md"
@@ -50,10 +50,10 @@ docs = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/yourusername/annotex"
+Homepage = "https://github.com/RandikaKM/annotex"
 Documentation = "https://annotex.readthedocs.io"
-Repository = "https://github.com/yourusername/annotex"
-"Bug Tracker" = "https://github.com/yourusername/annotex/issues"
+Repository = "https://github.com/RandikaKM/annotex"
+"Bug Tracker" = "https://github.com/RandikaKM/annotex/issues"
 
 [project.scripts]
 annotex = "annotex.main:main"

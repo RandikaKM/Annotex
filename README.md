@@ -4,8 +4,8 @@
 
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 <!-- [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) -->
-[![PyPI version](https://badge.fury.io/py/annotex.svg)](https://badge.fury.io/py/annotex)
-[![Downloads](https://pepy.tech/badge/annotex)](https://pepy.tech/project/annotex)
+<!-- [![PyPI version](https://badge.fury.io/py/annotex.svg)](https://badge.fury.io/py/annotex) -->
+<!-- [![Downloads](https://pepy.tech/badge/annotex)](https://pepy.tech/project/annotex) -->
 
 Annotex is a professional-grade annotation tool designed for creating high-quality computer vision datasets. With AI-powered assistance and an intuitive interface, it streamlines the annotation process for machine learning practitioners.
 
@@ -127,4 +127,4 @@ annotex --images /path/to/images
 
 **⭐ Star us on GitHub if Annotex helps your projects!**
 
-Made with ❤️ by [Randika](https://github.com/RandikaKM)
+Made by [Randika](https://github.com/RandikaKM)

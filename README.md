@@ -43,6 +43,9 @@ pip install annotex
 # Start the GUI
 annotex
 
+# Or
+python -m annotex.main
+
 # Load a project
 annotex --project my_project.anno
 

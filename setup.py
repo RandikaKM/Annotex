@@ -25,7 +25,7 @@ def read_requirements():
 
 setup(
     name="annotex",
-    version="2.0.3",
+    version="2.0.5",
     author="Randika K. Makumbura",
     author_email="randikamk.96@gmail.com",
     description="AI-Powered Annotation Tool for Computer Vision Datasets",

@@ -36,54 +36,52 @@ class Annotex:
         self.root = root
         self.root.title("Annotex v2.1")
         
-        # Make window resizable and set minimum size
-        self.root.minsize(1200, 700)  # Reduced minimum size
-        
-        # Get screen dimensions and set appropriate size
+        # Get screen dimensions
         screen_width = self.root.winfo_screenwidth()
         screen_height = self.root.winfo_screenheight()
         
-        # Calculate window size (80% of screen)
-        window_width = min(1600, int(screen_width * 0.9))
-        window_height = min(1000, int(screen_height * 0.85))
+        # Calculate proportional window size (95% of screen)
+        window_width = int(screen_width * 0.95)
+        window_height = int(screen_height * 0.90)
         
-        # Center window on screen
+        # Ensure minimum size
+        window_width = max(1200, window_width)
+        window_height = max(700, window_height)
+        
+        # Center window
         x = (screen_width - window_width) // 2
         y = (screen_height - window_height) // 2
         
         self.root.geometry(f"{window_width}x{window_height}+{x}+{y}")
-        
-        # Make window resizable
         self.root.resizable(True, True)
         
-        # Initialize components
+        # Calculate scale factor for proportional resizing
+        self.scale_factor = min(window_width / 1600, window_height / 1000)
+        
+        # Continue with ALL your existing initialization
         self.engine = AnnotationEngine()
         self.manager = DatasetManager()
         
-        # Image and annotation state
         self.current_image = None
         self.current_image_path = None
-        self.original_image = None  # Keep original for quality
+        self.original_image = None
         self.image_list = []
         self.current_image_index = 0
         self.current_annotations = []
         self.selected_annotation = None
         
-        # View state
         self.zoom_factor = 1.0
         self.pan_x = 0
         self.pan_y = 0
         self.canvas_width = 0
         self.canvas_height = 0
         
-        # Annotation state
-        self.annotation_mode = "rectangle"  # rectangle, polygon, point, brush
+        self.annotation_mode = "rectangle"
         self.is_drawing = False
         self.is_panning = False
         self.current_polygon_points = []
         self.temp_line_id = None
         
-        # Drawing state for different tools
         self.start_x = 0
         self.start_y = 0
         self.last_x = 0
@@ -92,35 +90,28 @@ class Annotex:
         self.resize_handle = None
         self.resize_anchor = None
         
-        # Class management - Dynamic classes
-        self.classes = []  # List of {'name': str, 'color': str, 'id': int}
+        self.classes = []
         self.selected_class_id = 0
         self.next_class_id = 0
         
-        # Settings
         self.confidence_threshold = 0.5
         self.auto_save = True
         self.brush_size = 3
         self.show_labels = True
         self.show_confidence = True
         
-        # Export settings
         self.train_split = 0.8
         self.val_split = 0.2
         self.export_format = "YOLO11"
         
-        # Copy/paste support
         self.copied_annotation = None
         
         self.create_gui()
         self.setup_bindings()
         
-        # Initialize status and logging (MOVE THESE LINES HERE)
         self.update_status("Ready - Load images to start annotation")
         self.log_message("🚀 Annotex!")
         self.log_message(f"PIL Available: {PIL_AVAILABLE}")
-
-        # Check dependencies AFTER GUI is created
         self.check_dependencies()
 
     def load_project_file(self, file_path):
@@ -195,25 +186,34 @@ class Annotex:
     def create_gui(self):
         """Create the complete GUI"""
         self.create_main_frames()
-        self.create_left_panel()
+        self.create_left_panel()      
         self.create_center_panel()
-        self.create_right_panel()
+        self.create_right_panel()       
         self.create_bottom_panel()
         self.create_status_bar()
         self.create_menus()
-        
+            
     def create_main_frames(self):
-        """Create main frame structure"""
-        # Main container
+        """Create main frame structure with proportional sizing"""
         main_frame = ttk.Frame(self.root)
         main_frame.pack(fill='both', expand=True, padx=5, pady=5)
         
-        # Top frame for panels
         top_frame = ttk.Frame(main_frame)
         top_frame.pack(fill='both', expand=True)
         
+        # Scale panel sizes proportionally based on screen size
+        left_width = int(350 * self.scale_factor)
+        # INCREASED: Right panel width to accommodate longer button text
+        right_width = int(380 * self.scale_factor)  # Was 300, now 380
+        bottom_height = int(120 * self.scale_factor)
+        
+        # Ensure minimum usable sizes - INCREASED minimum for right panel
+        left_width = max(250, left_width)
+        right_width = max(280, right_width)  # Was 220, now 280
+        bottom_height = max(80, bottom_height)
+        
         # Left panel - Tools & Classes
-        self.left_frame = ttk.LabelFrame(top_frame, text="Tools & Classes", width=350)
+        self.left_frame = ttk.LabelFrame(top_frame, text="Tools & Classes", width=left_width)
         self.left_frame.pack(side='left', fill='y', padx=(0,5))
         self.left_frame.pack_propagate(False)
         
@@ -221,42 +221,174 @@ class Annotex:
         self.center_frame = ttk.LabelFrame(top_frame, text="Image Viewer")
         self.center_frame.pack(side='left', fill='both', expand=True, padx=5)
         
-        # Right panel - Images & Export
-        self.right_frame = ttk.LabelFrame(top_frame, text="Images & Export", width=300)
+        # Right panel - Images & Export (WIDER NOW)
+        self.right_frame = ttk.LabelFrame(top_frame, text="Images & Export", width=right_width)
         self.right_frame.pack(side='right', fill='y', padx=(5,0))
         self.right_frame.pack_propagate(False)
         
         # Bottom panel - Console
-        self.bottom_frame = ttk.LabelFrame(main_frame, text="Console & Status", height=120)
+        self.bottom_frame = ttk.LabelFrame(main_frame, text="Console & Status", height=bottom_height)
         self.bottom_frame.pack(fill='x', pady=(5,0))
         self.bottom_frame.pack_propagate(False)
         
     def create_left_panel(self):
-        """Create left panel with manual annotation tools and classes"""
-        # Create scrollable frame
-        canvas = tk.Canvas(self.left_frame)
-        scrollbar = ttk.Scrollbar(self.left_frame, orient="vertical", command=canvas.yview)
-        scrollable_frame = ttk.Frame(canvas)
-        
-        scrollable_frame.bind(
-            "<Configure>",
-            lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
-        )
-        
-        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
-        canvas.configure(yscrollcommand=scrollbar.set)
-        
-        canvas.pack(side="left", fill="both", expand=True)
-        scrollbar.pack(side="right", fill="y")
-        
+        """Create left panel with adaptive content sizing"""
         # Manual Annotation Tools
-        self.create_manual_annotation_section(scrollable_frame)
+        manual_frame = ttk.LabelFrame(self.left_frame, text="🔲 Manual Annotation Tools")
+        manual_frame.pack(fill='x', padx=3, pady=3)
         
-        # Class Management
-        self.create_class_management_section(scrollable_frame)
+        # Annotation tools
+        tools_frame = ttk.Frame(manual_frame)
+        tools_frame.pack(fill='x', padx=3, pady=3)
         
-        # Semi-Automated Tools
-        self.create_semi_automated_section(scrollable_frame)
+        self.tool_buttons = {}
+        tools = [
+            ("🔲 Rectangle", "rectangle"),
+            ("🔷 Polygon", "polygon"), 
+            ("📍 Point", "point"),
+            ("🖌️ Brush", "brush")
+        ]
+        
+        # Adaptive button width
+        btn_width = max(12, min(15, int(15 * self.scale_factor)))
+        
+        for i, (text, mode) in enumerate(tools):
+            if mode == "rectangle":
+                btn = tk.Button(tools_frame, text=text, 
+                            command=lambda m=mode: self.set_annotation_mode(m),
+                            width=btn_width, relief='raised')
+            else:
+                btn = tk.Button(tools_frame, text=text, 
+                            command=lambda m=mode: self.show_coming_soon(m),
+                            width=btn_width, relief='raised',
+                            bg='#E0E0E0', fg='#888888', state='normal')
+            
+            btn.grid(row=i//2, column=i%2, padx=1, pady=1, sticky='ew')
+            self.tool_buttons[mode] = btn
+            
+        tools_frame.columnconfigure(0, weight=1)
+        tools_frame.columnconfigure(1, weight=1)
+        
+        self.set_annotation_mode("rectangle")
+        
+        # Edit tools (compact version)
+        edit_frame = ttk.LabelFrame(self.left_frame, text="Edit Tools")
+        edit_frame.pack(fill='x', padx=3, pady=3)
+        
+        edit_buttons = [
+            ("✏️ Edit", self.edit_selected),
+            ("🗑 Delete", self.delete_selected),
+            ("📋 Copy", self.copy_selected),
+            ("📄 Paste", self.paste_annotation),
+            ("↩️ Undo", self.undo_action),
+            ("🔄 Clear All", self.clear_all_annotations)
+        ]
+        
+        for i, (text, command) in enumerate(edit_buttons):
+            btn = ttk.Button(edit_frame, text=text, command=command, width=btn_width)
+            btn.grid(row=i//2, column=i%2, padx=1, pady=1, sticky='ew')
+            
+        edit_frame.columnconfigure(0, weight=1)
+        edit_frame.columnconfigure(1, weight=1)
+        
+        # Class Management (SMART ADAPTIVE - ensures all sections visible)
+        class_frame = ttk.LabelFrame(self.left_frame, text="🏷️ Class Management")
+        class_frame.pack(fill='x', padx=3, pady=3)
+        
+        # Current selected class display
+        current_class_frame = ttk.Frame(class_frame)
+        current_class_frame.pack(fill='x', padx=3, pady=2)
+        
+        ttk.Label(current_class_frame, text="Selected:").pack(side='left')
+        self.current_class_label = ttk.Label(current_class_frame, text="No Classes", 
+                                        background='lightgray', width=12)
+        self.current_class_label.pack(side='right')
+        
+        # Class list (SMART ADAPTIVE HEIGHT)
+        list_frame = ttk.Frame(class_frame)
+        list_frame.pack(fill='x', padx=3, pady=2)
+        
+        # Calculate adaptive height based on screen size with proper bounds
+        # Small screens: 3-4 lines, Medium: 4-6 lines, Large: 6-12 lines
+        screen_height = self.root.winfo_screenheight()
+        if screen_height <= 768:  # Small screens (laptops)
+            list_height = 3
+        elif screen_height <= 1080:  # Medium screens
+            list_height = max(4, min(6, int(6 * self.scale_factor)))
+        else:  # Large screens
+            list_height = max(6, min(12, int(8 * self.scale_factor)))
+        
+        self.class_listbox = tk.Listbox(list_frame, height=list_height, selectmode='single')
+        class_scrollbar = ttk.Scrollbar(list_frame, orient='vertical', 
+                                    command=self.class_listbox.yview)
+        self.class_listbox.configure(yscrollcommand=class_scrollbar.set)
+        
+        self.class_listbox.pack(side='left', fill='both', expand=True)
+        class_scrollbar.pack(side='right', fill='y')
+        
+        self.class_listbox.bind('<<ListboxSelect>>', self.on_class_select)
+        self.class_listbox.bind('<Double-Button-1>', self.edit_class)
+        
+        # Class management buttons (compact, at bottom)
+        class_btn_frame = ttk.Frame(class_frame)
+        class_btn_frame.pack(fill='x', padx=3, pady=2)
+        
+        compact_btn_width = max(8, min(12, int(8 * self.scale_factor)))
+        
+        ttk.Button(class_btn_frame, text="➕", 
+                command=self.add_class_dialog, width=4).pack(side='left', padx=1)
+        ttk.Button(class_btn_frame, text="✏️", 
+                command=self.edit_class, width=4).pack(side='left', padx=1)
+        ttk.Button(class_btn_frame, text="🗑", 
+                command=self.delete_class, width=4).pack(side='left', padx=1)
+        
+        self.update_class_list()
+        
+        # Semi-Automated Tools (COMPACT, fixed size at bottom)
+        auto_frame = ttk.LabelFrame(self.left_frame, text="🤖 AI Tools")
+        auto_frame.pack(fill='x', padx=3, pady=3)
+        
+        # Model loading (compact)
+        model_frame = ttk.Frame(auto_frame)
+        model_frame.pack(fill='x', padx=3, pady=2)
+        
+        ttk.Label(model_frame, text="Model:").pack(anchor='w')
+        
+        model_entry_frame = ttk.Frame(model_frame)
+        model_entry_frame.pack(fill='x', pady=1)
+        
+        self.model_path_var = tk.StringVar()
+        model_entry = ttk.Entry(model_entry_frame, textvariable=self.model_path_var, width=15)
+        model_entry.pack(side='left', fill='x', expand=True)
+        ttk.Button(model_entry_frame, text="📂", command=self.browse_model, width=3).pack(side='right')
+        
+        ttk.Button(model_frame, text="🔄 Load Model", command=self.load_model, 
+                width=btn_width).pack(fill='x', pady=1)
+        
+        # Confidence settings (compact)
+        conf_frame = ttk.Frame(auto_frame)
+        conf_frame.pack(fill='x', padx=3, pady=2)
+        
+        ttk.Label(conf_frame, text="Confidence:").pack(anchor='w')
+        self.conf_var = tk.DoubleVar(value=self.confidence_threshold)
+        conf_scale = ttk.Scale(conf_frame, from_=0.1, to=1.0, 
+                            variable=self.conf_var, orient='horizontal',
+                            command=self.update_confidence)
+        conf_scale.pack(fill='x', padx=2)
+        
+        self.conf_label = ttk.Label(conf_frame, text=f"{self.confidence_threshold:.2f}")
+        self.conf_label.pack()
+        
+        # Auto-annotation buttons (compact, always visible)
+        auto_btn_frame = ttk.Frame(auto_frame)
+        auto_btn_frame.pack(fill='x', padx=3, pady=2)
+        
+        ttk.Button(auto_btn_frame, text="🎯 Auto-Annotate Current", 
+                command=self.auto_annotate_current, width=btn_width).pack(fill='x', pady=1)
+        ttk.Button(auto_btn_frame, text="📋 Auto-Annotate All", 
+                command=self.auto_annotate_all, width=btn_width).pack(fill='x', pady=1)
+        ttk.Button(auto_btn_frame, text="💡 Suggestions", 
+                command=self.smart_suggestions, width=btn_width).pack(fill='x', pady=1)
         
     def create_manual_annotation_section(self, parent):
         """Create manual annotation tools section"""
@@ -542,25 +674,30 @@ class Annotex:
         self.canvas.bind('<Configure>', self.on_canvas_configure)
         
     def create_right_panel(self):
-        """Create right panel with image list and export options"""
+        """Create right panel with adaptive content sizing"""
         # Image management
         img_frame = ttk.LabelFrame(self.right_frame, text="📁 Image Management")
         img_frame.pack(fill='both', expand=True, padx=5, pady=5)
         
-        # Load images button
+        # IMPROVED: Better button width calculation for wider panel
+        # Base button width on actual panel width rather than arbitrary scaling
+        button_width = max(25, min(30, int(28 * self.scale_factor)))  # Increased range
+        
         ttk.Button(img_frame, text="📂 Load Images Folder", 
-                  command=self.load_images, width=25).pack(pady=5)
+                command=self.load_images, width=button_width).pack(pady=3)
         
         ttk.Button(img_frame, text="📄 Add Individual Images", 
-          command=self.add_individual_images, width=25).pack(pady=2)
+                command=self.add_individual_images, width=button_width).pack(pady=2)
         
-        # Image list
+        # Image list with adaptive height
+        list_height = max(6, min(12, int(12 * self.scale_factor)))
+        
         list_container = ttk.Frame(img_frame)
-        list_container.pack(fill='both', expand=True, pady=5)
+        list_container.pack(fill='both', expand=True, pady=3)
         
-        self.image_listbox = tk.Listbox(list_container, height=12)
+        self.image_listbox = tk.Listbox(list_container, height=list_height)
         img_scrollbar = ttk.Scrollbar(list_container, orient='vertical', 
-                                     command=self.image_listbox.yview)
+                                    command=self.image_listbox.yview)
         self.image_listbox.configure(yscrollcommand=img_scrollbar.set)
         
         self.image_listbox.pack(side='left', fill='both', expand=True)
@@ -568,38 +705,43 @@ class Annotex:
         
         self.image_listbox.bind('<<ListboxSelect>>', self.on_image_select)
 
-        # Image management buttons
+        # Image management buttons - IMPROVED sizing
         img_btn_frame = ttk.Frame(img_frame)
         img_btn_frame.pack(fill='x', pady=2)
         
+        # Better button width for management buttons
+        mgmt_btn_width = max(11, min(15, int(14 * self.scale_factor)))
+        
         ttk.Button(img_btn_frame, text="🗑 Remove", 
-                  command=self.remove_selected_image, width=12).pack(side='left', padx=1)
+                command=self.remove_selected_image, width=mgmt_btn_width).pack(side='left', padx=2)
         ttk.Button(img_btn_frame, text="🧹 Clear All", 
-                  command=self.clear_all_images, width=12).pack(side='right', padx=1)
+                command=self.clear_all_images, width=mgmt_btn_width).pack(side='right', padx=2)
         
         # Image info
         self.image_info_label = ttk.Label(img_frame, text="No image loaded", 
-                                         background='lightgray', width=30, anchor='center')
+                                        background='lightgray', width=button_width, anchor='center')
         self.image_info_label.pack(pady=2)
         
         # Export section
         export_frame = ttk.LabelFrame(self.right_frame, text="📤 Export Dataset")
-        export_frame.pack(fill='x', padx=5, pady=5)
+        export_frame.pack(fill='x', padx=5, pady=3)
         
-        # Export format
+        # Format selection
         format_frame = ttk.Frame(export_frame)
-        format_frame.pack(fill='x', padx=5, pady=2)
+        format_frame.pack(fill='x', padx=3, pady=2)
         
         ttk.Label(format_frame, text="Format:").pack(side='left')
         self.export_format_var = tk.StringVar(value="YOLO11")
+        # Better combo width for wider panel
+        combo_width = max(10, min(15, int(14 * self.scale_factor)))
         format_combo = ttk.Combobox(format_frame, textvariable=self.export_format_var,
-                                   values=["YOLOv11", "YOLOv8"],
-                                   state='readonly', width=12)
+                                values=["YOLO11", "YOLOv8"],
+                                state='readonly', width=combo_width)
         format_combo.pack(side='right')
         
         # Split ratios
         split_frame = ttk.LabelFrame(export_frame, text="Dataset Split")
-        split_frame.pack(fill='x', padx=5, pady=2)
+        split_frame.pack(fill='x', padx=3, pady=2)
         
         # Train split
         train_frame = ttk.Frame(split_frame)
@@ -609,37 +751,37 @@ class Annotex:
         train_scale = ttk.Scale(train_frame, from_=0.5, to=0.9, 
                             variable=self.train_var, orient='horizontal',
                             command=self.update_split_ratios)
-        train_scale.pack(side='left', fill='x', expand=True, padx=5)
-        self.train_label = ttk.Label(train_frame, text="80%", width=5)
+        train_scale.pack(side='left', fill='x', expand=True, padx=3)
+        self.train_label = ttk.Label(train_frame, text="80%", width=4)
         self.train_label.pack(side='right')
-
+        
         # Val split
         val_frame = ttk.Frame(split_frame)
         val_frame.pack(fill='x', pady=1)
         ttk.Label(val_frame, text="Val:").pack(side='left')
-        self.val_label = ttk.Label(val_frame, text="20%", width=5)
+        self.val_label = ttk.Label(val_frame, text="20%", width=4)
         self.val_label.pack(side='right')
         
         # Export options
         options_frame = ttk.Frame(export_frame)
-        options_frame.pack(fill='x', padx=5, pady=2)
+        options_frame.pack(fill='x', padx=3, pady=2)
         
         self.include_confidence_var = tk.BooleanVar(value=True)
         ttk.Checkbutton(options_frame, text="Include Confidence", 
-                       variable=self.include_confidence_var).pack(anchor='w')
+                    variable=self.include_confidence_var).pack(anchor='w')
         
         self.create_yaml_var = tk.BooleanVar(value=True)
         ttk.Checkbutton(options_frame, text="Create data.yaml", 
-                       variable=self.create_yaml_var).pack(anchor='w')
+                    variable=self.create_yaml_var).pack(anchor='w')
         
         # Export buttons
         export_btn_frame = ttk.Frame(export_frame)
-        export_btn_frame.pack(fill='x', padx=5, pady=5)
+        export_btn_frame.pack(fill='x', padx=3, pady=3)
         
         ttk.Button(export_btn_frame, text="📤 Export Dataset", 
-                  command=self.export_dataset).pack(fill='x', pady=1)
+                command=self.export_dataset, width=button_width).pack(fill='x', pady=1)
         ttk.Button(export_btn_frame, text="💾 Save All Annotations", 
-                  command=self.save_all_annotations).pack(fill='x', pady=1)
+                command=self.save_all_annotations, width=button_width).pack(fill='x', pady=1)
         
     def create_bottom_panel(self):
         """Create console and status panel"""

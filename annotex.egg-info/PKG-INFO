@@ -1,6 +1,6 @@
 Metadata-Version: 2.4
 Name: annotex
-Version: 2.0.3
+Version: 2.0.4
 Summary: Annotation Tool for Computer Vision Datasets
 Home-page: https://github.com/RandikaKM/annotex
 Author: Randika K. Makumbura
@@ -63,7 +63,7 @@ Annotex is a professional-grade annotation tool designed for creating high-quali
 
 ### 🎯 **Professional Annotation Tools**
 - **Rectangle Annotation** - Precise bounding box creation
-- **AI-Assisted Annotation** - Auto-annotation with YOLO models
+- **AI-Assisted Annotation** - Auto-annotation with pre-trained YOLO models
 - **Batch Processing** - Process multiple images simultaneously
 
 ### 🔧 **Advanced Workflow**

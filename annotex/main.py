@@ -71,7 +71,7 @@ Examples:
     parser.add_argument(
         "--version", "-v",
         action="version",
-        version="Annotex 2.0.3"
+        version="Annotex 2.0.5"
     )
     
     parser.add_argument(

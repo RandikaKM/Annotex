@@ -2,7 +2,7 @@
 Annotex -  Annotation Tool
 """
 
-__version__ = "2.0.3"
+__version__ = "2.0.5"
 __author__ = "Randika K. Makumbura"
 __email__ = "Randikamk.96@gmail.com"
 

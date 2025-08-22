@@ -35,8 +35,26 @@ class Annotex:
     def __init__(self, root):
         self.root = root
         self.root.title("Annotex v2.1")
-        self.root.geometry("1600x1000")
-        self.root.minsize(1400, 900)
+        
+        # Make window resizable and set minimum size
+        self.root.minsize(1200, 700)  # Reduced minimum size
+        
+        # Get screen dimensions and set appropriate size
+        screen_width = self.root.winfo_screenwidth()
+        screen_height = self.root.winfo_screenheight()
+        
+        # Calculate window size (80% of screen)
+        window_width = min(1600, int(screen_width * 0.9))
+        window_height = min(1000, int(screen_height * 0.85))
+        
+        # Center window on screen
+        x = (screen_width - window_width) // 2
+        y = (screen_height - window_height) // 2
+        
+        self.root.geometry(f"{window_width}x{window_height}+{x}+{y}")
+        
+        # Make window resizable
+        self.root.resizable(True, True)
         
         # Initialize components
         self.engine = AnnotationEngine()

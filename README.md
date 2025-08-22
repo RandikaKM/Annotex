@@ -15,7 +15,7 @@ Annotex is a professional-grade annotation tool designed for creating high-quali
 
 ### 🎯 **Professional Annotation Tools**
 - **Rectangle Annotation** - Precise bounding box creation
-- **AI-Assisted Annotation** - Auto-annotation with YOLO models
+- **AI-Assisted Annotation** - Auto-annotation with pre-trained YOLO models
 - **Batch Processing** - Process multiple images simultaneously
 
 ### 🔧 **Advanced Workflow**

@@ -1,21 +1,19 @@
 Metadata-Version: 2.4
 Name: annotex
-Version: 2.0.0
-Summary: AI-Powered Annotation Tool for Computer Vision Datasets
-Home-page: https://github.com/Randika/annotex
+Version: 2.0.3
+Summary: Annotation Tool for Computer Vision Datasets
+Home-page: https://github.com/RandikaKM/annotex
 Author: Randika K. Makumbura
-Author-email: Your Name <your.email@example.com>
-License: MIT
-Project-URL: Homepage, https://github.com/yourusername/annotex
-Project-URL: Documentation, https://annotex.readthedocs.io
-Project-URL: Repository, https://github.com/yourusername/annotex
-Project-URL: Bug Tracker, https://github.com/yourusername/annotex/issues
+Author-email: "Randika K. Makumbura" <randikamk.96@gmail.com>
+License: RKM
+Project-URL: Homepage, https://github.com/RandikaKM/annotex
+Project-URL: Repository, https://github.com/RandikaKM/annotex
+Project-URL: Bug Tracker, https://github.com/RandikaKM/annotex/issues
 Keywords: annotation,computer-vision,AI,machine-learning,YOLO,dataset
 Classifier: Development Status :: 4 - Beta
 Classifier: Intended Audience :: Developers
 Classifier: Intended Audience :: Science/Research
 Classifier: Topic :: Scientific/Engineering :: Artificial Intelligence
-Classifier: License :: OSI Approved :: MIT License
 Classifier: Programming Language :: Python :: 3
 Classifier: Programming Language :: Python :: 3.8
 Classifier: Programming Language :: Python :: 3.9
@@ -54,8 +52,8 @@ Dynamic: requires-python
 
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 <!-- [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) -->
-[![PyPI version](https://badge.fury.io/py/annotex.svg)](https://badge.fury.io/py/annotex)
-[![Downloads](https://pepy.tech/badge/annotex)](https://pepy.tech/project/annotex)
+<!-- [![PyPI version](https://badge.fury.io/py/annotex.svg)](https://badge.fury.io/py/annotex) -->
+<!-- [![Downloads](https://pepy.tech/badge/annotex)](https://pepy.tech/project/annotex) -->
 
 Annotex is a professional-grade annotation tool designed for creating high-quality computer vision datasets. With AI-powered assistance and an intuitive interface, it streamlines the annotation process for machine learning practitioners.
 
@@ -177,4 +175,4 @@ annotex --images /path/to/images
 
 **⭐ Star us on GitHub if Annotex helps your projects!**
 
-Made with ❤️ by [Randika](https://github.com/RandikaKM)
+Made by [Randika](https://github.com/RandikaKM)

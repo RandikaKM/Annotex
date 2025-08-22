@@ -25,17 +25,17 @@ def read_requirements():
 
 setup(
     name="annotex",
-    version="2.0.0",
+    version="2.0.3",
     author="Randika K. Makumbura",
     author_email="randikamk.96@gmail.com",
     description="AI-Powered Annotation Tool for Computer Vision Datasets",
     long_description=read_readme(),
     long_description_content_type="text/markdown",
-    url="https://github.com/Randika/annotex",
+    url="https://github.com/RandikaKM/annotex",
     project_urls={
-        "Bug Reports": "https://github.com/Randika819/annotex/issues",
-        "Source": "https://github.com/Randika819/annotex",
-        "Documentation": "https://github.com/Randika819/annotex/docs",
+        "Bug Reports": "https://github.com/RandikaKM/annotex/issues",
+        "Source": "https://github.com/RandikaKM/annotex",
+        # "Documentation": "https://github.com/RandikaKM/annotex/docs",
     },
     packages=find_packages(),
     classifiers=[
@@ -44,7 +44,7 @@ setup(
         "Intended Audience :: Science/Research",
         "Topic :: Scientific/Engineering :: Artificial Intelligence",
         "Topic :: Software Development :: Libraries :: Python Modules",
-        "License :: RKM License",
+        # "License :: RKM License",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",

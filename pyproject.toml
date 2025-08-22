@@ -8,7 +8,7 @@ description = "Annotation Tool for Computer Vision Datasets"
 authors = [
     {name = "Randika K. Makumbura", email = "randikamk.96@gmail.com"}
 ]
-license = {text = "MIT"}
+license = {text = "RKM"}
 readme = "README.md"
 requires-python = ">=3.8"
 classifiers = [
@@ -16,7 +16,6 @@ classifiers = [
     "Intended Audience :: Developers",
     "Intended Audience :: Science/Research",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
-    "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
@@ -51,7 +50,6 @@ docs = [
 
 [project.urls]
 Homepage = "https://github.com/RandikaKM/annotex"
-Documentation = "https://annotex.readthedocs.io"
 Repository = "https://github.com/RandikaKM/annotex"
 "Bug Tracker" = "https://github.com/RandikaKM/annotex/issues"
 
